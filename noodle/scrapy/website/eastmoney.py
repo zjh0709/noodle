@@ -64,10 +64,11 @@ class EastmoneyReport(Domain):
                                   url=self.topic_wizard(code, i),
                                   code=code,
                                   category=self.category))
-            return pages
         except json.decoder.JSONDecodeError:
             traceback.print_exc()
-            return pages
+        except ValueError:
+            traceback.print_exc()
+        return pages
 
     def get_article_detail(self, article: Article):
         try:
