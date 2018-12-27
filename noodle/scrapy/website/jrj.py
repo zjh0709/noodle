@@ -22,7 +22,7 @@ class JrjReport(Domain):
         url_expr = re.compile("http://istock.jrj.com.cn/article,yanbao,\d+.html")
         try:
             r = requests.get(page.url, timeout=5)
-        except requests.ConnectTimeout:
+        except requests.Timeout:
             traceback.print_exc()
             return []
         r.encoding = "gbk"
@@ -45,7 +45,7 @@ class JrjReport(Domain):
         pages = [self.first_page(code)]
         try:
             r = requests.get(page.url, timeout=5)
-        except requests.ConnectTimeout:
+        except requests.Timeout:
             traceback.print_exc()
             return pages
         r.encoding = "gbk"
@@ -69,7 +69,7 @@ class JrjReport(Domain):
     def get_article_detail(self, article: Article):
         try:
             r = requests.get(article.url, headers=self.headers, timeout=5)
-        except requests.exceptions.ConnectTimeout:
+        except requests.Timeout:
             traceback.print_exc()
             return article
         r.encoding = "gb2312"
@@ -123,7 +123,7 @@ class JrjNews(Domain):
         url_expr = re.compile("http://stock.jrj.com.cn/\d{4}/\d{2}/\d+.shtml")
         try:
             r = requests.get(page.url, timeout=5)
-        except requests.ConnectTimeout:
+        except requests.Timeout:
             traceback.print_exc()
             return []
         r.encoding = "gbk"
@@ -146,7 +146,7 @@ class JrjNews(Domain):
         pages = [self.first_page(code)]
         try:
             r = requests.get(page.url, timeout=5)
-        except requests.ConnectTimeout:
+        except requests.Timeout:
             traceback.print_exc()
             return pages
         r.encoding = "gbk"
@@ -170,7 +170,7 @@ class JrjNews(Domain):
     def get_article_detail(self, article: Article):
         try:
             r = requests.get(article.url, headers=self.headers, timeout=5)
-        except requests.exceptions.ConnectTimeout:
+        except requests.Timeout:
             traceback.print_exc()
             return article
         r.encoding = "gb2312"

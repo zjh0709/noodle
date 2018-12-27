@@ -24,7 +24,7 @@ class EastmoneyReport(Domain):
     def get_topics_by_page(self, page: Page):
         try:
             r = requests.get(page.url, timeout=5)
-        except requests.ConnectTimeout:
+        except requests.Timeout:
             traceback.print_exc()
             return []
         r.encoding = "utf-8"
@@ -52,7 +52,7 @@ class EastmoneyReport(Domain):
         pages = [self.first_page(code)]
         try:
             r = requests.get(page.url, timeout=5)
-        except requests.ConnectTimeout:
+        except requests.Timeout:
             traceback.print_exc()
             return pages
         r.encoding = "utf-8"
@@ -73,7 +73,7 @@ class EastmoneyReport(Domain):
     def get_article_detail(self, article: Article):
         try:
             r = requests.get(article.url, headers=self.headers, timeout=5)
-        except requests.exceptions.ConnectTimeout:
+        except requests.Timeout:
             traceback.print_exc()
             return article
         r.encoding = "gb2312"
