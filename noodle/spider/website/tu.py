@@ -1,7 +1,7 @@
 import tushare as ts
 
-from noodle.scrapy.domain import Domain
-from noodle.scrapy.entity import Article
+from noodle.spider.domain import Domain
+from noodle.spider.entity import Article
 
 
 class TushareNews(Domain):

@@ -4,8 +4,8 @@ import traceback
 import requests
 from bs4 import BeautifulSoup
 
-from noodle.scrapy.domain import Domain
-from noodle.scrapy.entity import Page, Article
+from noodle.spider.domain import Domain
+from noodle.spider.entity import Page, Article
 
 
 class JrjReport(Domain):

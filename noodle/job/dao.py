@@ -3,7 +3,7 @@ import traceback
 from pymongo.cursor import Cursor
 
 from noodle.common.client import get_mongodb_client
-from noodle.scrapy.entity import Article
+from noodle.spider.entity import Article
 
 
 class Dao(object):

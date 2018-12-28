@@ -1,8 +1,8 @@
 import json
 
-from noodle.scrapy.website.sina import SinaReport
-from noodle.scrapy.website.jrj import JrjReport, JrjNews
-from noodle.scrapy.website.eastmoney import EastmoneyReport
+from noodle.spider.website.sina import SinaReport
+from noodle.spider.website.jrj import JrjReport, JrjNews
+from noodle.spider.website.eastmoney import EastmoneyReport
 
 import logging
 

@@ -1,12 +1,11 @@
-import re
 import traceback
 
 import requests
 from bs4 import BeautifulSoup
 import json
 
-from noodle.scrapy.domain import Domain
-from noodle.scrapy.entity import Page, Article
+from noodle.spider.domain import Domain
+from noodle.spider.entity import Page, Article
 
 
 class EastmoneyReport(Domain):
