@@ -1,4 +1,4 @@
-from admin.hello import app as application
+from website.hello import app as application
 
 
 if __name__ == '__main__':

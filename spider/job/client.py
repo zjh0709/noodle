@@ -1,13 +1,14 @@
 from pymongo.mongo_client import MongoClient
+from pymongo.database import Database
 from pymongo.errors import ServerSelectionTimeoutError
 from redis.client import Redis
 from redis.exceptions import ConnectionError
 from kazoo.client import KazooClient
 from kazoo.handlers.threading import KazooTimeoutError
 
-from noodle.common.config import mongodb_port, mongodb_host
-from noodle.common.config import redis_port, redis_host
-from noodle.common.config import zookeeper_host
+from spider.job.config import mongodb_port, mongodb_host, mongodb_database
+from spider.job.config import redis_port, redis_host
+from spider.job.config import zookeeper_host
 
 import logging
 
@@ -19,8 +20,13 @@ def get_mongodb_client() -> MongoClient:
         logging.info(client.server_info())
     except ServerSelectionTimeoutError:
         logging.warning("connect to mongodb error.")
-        exit(0)
+        client = None
     return client
+
+
+def get_mongodb_database() -> Database:
+    client = get_mongodb_client()
+    return client.get_database(mongodb_database)
 
 
 def get_redis_client() -> Redis:
@@ -30,7 +36,7 @@ def get_redis_client() -> Redis:
         logging.info(client.info())
     except ConnectionError:
         logging.warning("connect to redis error.")
-        exit(0)
+        client = None
     return client
 
 
@@ -42,11 +48,11 @@ def get_zookeeper_client() -> KazooClient:
         logging.info(client.server_version())
     except KazooTimeoutError:
         logging.warning("connect to zookeeper error.")
-        exit(0)
+        client = None
     return client
 
 
 if __name__ == '__main__':
-    c = get_zookeeper_client()
-    c.stop()
-    c.close()
+    c = get_mongodb_client()
+    db = c.get_database("noodle")
+    print(type(db))

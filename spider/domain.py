@@ -1,4 +1,4 @@
-from noodle.spider.entity import Article, Page
+from spider.entity import Article, Page
 
 
 class Domain(object):

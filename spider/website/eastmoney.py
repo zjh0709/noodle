@@ -4,8 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
-from noodle.spider.domain import Domain
-from noodle.spider.entity import Page, Article
+from spider.domain import Domain
+from spider.entity import Page, Article
 
 
 class EastmoneyReport(Domain):
