@@ -15,7 +15,7 @@ def register_single_job(node=""):
         ret = None
         if not zk.exists(node_path) or not zk.get_children(node_path):
             v = "|".join([socket.gethostname(), str(os.getpid())])
-            logging.warning("job start. node: {} add {}".format(node_path, v))
+            logging.info("job start. node: {} add {}".format(node_path, v))
             zk.create(path=node_path+"/"+v, value=b"running", ephemeral=True, makepath=True)
             ret = func(*args, **kwargs)
         zk.stop()
@@ -32,10 +32,11 @@ def register_multiple_job(node=""):
         zk = get_zookeeper_client()
         node_path = "/".join([zookeeper_root, node])
         v = "|".join([socket.gethostname(), str(os.getpid())])
-        logging.warning("job start. node: {} add {}".format(node_path, v))
-        zk.create(path=node_path+"/"+v, value=b"running", ephemeral=True, makepath=True)
+        logging.info("job start. node: {} add {}".format(node_path, v))
+        zk.create(path=node_path + "/" + v, value=b"running", ephemeral=True, makepath=True)
+        ret = func(*args, **kwargs)
         zk.stop()
         zk.close()
-        return func(*args, **kwargs)
+        return ret
 
     return wrap
