@@ -9,13 +9,13 @@ if __name__ == '__main__':
     parser.add_argument("--sub", dest="sub", default=None)
     parser.add_argument("--parm", dest="parm", default=None)
     args = parser.parse_args()
-    if args.job == "spider" and args.sub == "reset_topic":
+    if args.job == "spider" and args.sub == "reset" and args.parm == "topic":
         reset_topic()
     elif args.job == "spider" and args.sub == "topic":
         run_topic(mode="hot")
-    elif args.job == "spider" and args.sub == "topic_all":
+    elif args.job == "spider" and args.sub == "topic" and args.parm == "all":
         run_topic(mode="all")
-    elif args.job == "spider" and args.sub == "reset_article":
+    elif args.job == "spider" and args.sub == "reset" and args.parm == "article":
         reset_article()
     elif args.job == "spider" and args.sub == "article":
         run_article()
