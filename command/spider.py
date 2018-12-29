@@ -30,3 +30,4 @@ def run_article():
     db = client.get_mongodb_database()
     crawl.run_article(r, db)
     db.client.close()
+

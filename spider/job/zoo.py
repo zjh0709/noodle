@@ -6,44 +6,36 @@ import socket
 import os
 
 
+# 唯一任务 节点 计算机名称|进程号 有记录则不执行
 def register_single_job(node=""):
     @decorator
     def wrap(func, *args, **kwargs):
         zk = get_zookeeper_client()
         node_path = "/".join([zookeeper_root, node])
         ret = None
-        if zk.exists(node_path):
-            logging.warning("job is running. node: {}".format(node_path))
-        else:
-            logging.warning("job start. node: {}".format(node_path))
-            zk.create(path=node_path, value=b"running", ephemeral=True, makepath=True)
+        if not zk.exists(node_path) or not zk.get_children(node_path):
+            v = "|".join([socket.gethostname(), str(os.getpid())])
+            logging.warning("job start. node: {} add {}".format(node_path, v))
+            zk.create(path=node_path+"/"+v, value=b"running", ephemeral=True, makepath=True)
             ret = func(*args, **kwargs)
         zk.stop()
         zk.close()
         return ret
+
     return wrap
 
 
+# 并行任务 增加节点 计算机名|进程号 value 记录 running
 def register_multiple_job(node=""):
     @decorator
     def wrap(func, *args, **kwargs):
         zk = get_zookeeper_client()
-        node_path = "/".join([zookeeper_root, node, socket.gethostname(), str(os.getpid())])
-        logging.warning("job start. node: {}".format(node_path))
-        zk.create(path=node_path, value=b"running", ephemeral=True, makepath=True)
-        ret = func(*args, **kwargs)
+        node_path = "/".join([zookeeper_root, node])
+        v = "|".join([socket.gethostname(), str(os.getpid())])
+        logging.warning("job start. node: {} add {}".format(node_path, v))
+        zk.create(path=node_path+"/"+v, value=b"running", ephemeral=True, makepath=True)
         zk.stop()
         zk.close()
-        return ret
+        return func(*args, **kwargs)
+
     return wrap
-
-
-@register_multiple_job(node="test")
-def f(a, b):
-    import time
-    time.sleep(10)
-    return a+b
-
-
-if __name__ == '__main__':
-    print(f(2, 3))
