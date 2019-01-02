@@ -205,8 +205,7 @@ class JrjNews(Domain):
 
 
 if __name__ == '__main__':
-    job = JrjNews()
-    p = job.first_page("600597")
-    t = job.get_topics_by_page(p)
-    print(job.get_article_detail(t[0]))
-    # print(len(job.get_topics_by_code("600597")))
+    job = JrjReport()
+    a = Article(url="http://istock.jrj.com.cn/article,yanbao,29969846.html")
+    print(job.get_article_detail(a))
+

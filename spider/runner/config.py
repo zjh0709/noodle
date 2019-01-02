@@ -1,3 +1,7 @@
+STOCK_KEY = "stock"
+TOPIC_KEY = "topic"
+ARTICLE_TABLE = "article"
+
 stock = [
     "002305",
     "601700",

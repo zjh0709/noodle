@@ -1,25 +1,28 @@
-import argparse
+import sys
+
 from command.spider_runner import reset_article, reset_topic, run_article, run_topic
 from command.spider_manager import job_list, job_kill
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--job", dest="job", default=None)
-    parser.add_argument("--sub", dest="sub", default=None)
-    parser.add_argument("--parm", dest="parm", default=None)
-    args = parser.parse_args()
-    if args.job == "spider" and args.sub == "reset" and args.parm == "topic":
-        reset_topic()
-    elif args.job == "spider" and args.sub == "topic":
-        run_topic(mode="hot")
-    elif args.job == "spider" and args.sub == "topic" and args.parm == "all":
-        run_topic(mode="all")
-    elif args.job == "spider" and args.sub == "reset" and args.parm == "article":
-        reset_article(num=5000)
-    elif args.job == "spider" and args.sub == "article":
+    p1 = sys.argv[1] if len(sys.argv) > 1 else None
+    p2 = sys.argv[2] if len(sys.argv) > 2 else None
+    p3 = sys.argv[3] if len(sys.argv) > 3 else None
+    if p1 == "reset":
+        if p2 == "topic":
+            reset_topic()
+        elif p2 == "article":
+            num = int(p3) if str(p3).isdecimal() else 5000
+            reset_article(num=num)
+    elif p1 == "topic":
+        if p2 == "all":
+            run_topic(mode="all")
+        else:
+            run_topic(mode="hot")
+    elif p1 == "article":
         run_article()
-    elif args.job == "manager" and args.sub == "list" and args.parm:
-        job_list(args.parm)
-    elif args.job == "manager" and args.sub == "kill" and args.parm:
-        job_kill(args.parm)
+    elif p1 == "list" and p2:
+        job_list(p2)
+    elif p1 == "kill" and p2:
+        job_kill(p2)
+

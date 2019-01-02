@@ -3,6 +3,8 @@ import json
 from redis.client import Redis
 from pymongo.database import Database
 
+from spider.runner.config import STOCK_KEY, TOPIC_KEY, ARTICLE_TABLE
+from spider.runner import utils
 from spider.website.sina import SinaReport
 from spider.website.jrj import JrjReport, JrjNews
 from spider.website.eastmoney import EastmoneyReport
@@ -10,14 +12,9 @@ from spider.website.eastmoney import EastmoneyReport
 import logging
 
 from spider.runner.config import stock
-from spider import utils
 
 from functools import partial
-from spider.entity import Article
-
-
-STOCK_KEY = "stock"
-TOPIC_KEY = "topic"
+from spider.entity import article_to_dict, dict_to_article
 
 
 def _reset_key(r: Redis, k: str):
@@ -36,7 +33,7 @@ def reset_topic(r: Redis):
 
 def reset_article(r: Redis, db: Database, num: int=1000):
     _reset_key(r, TOPIC_KEY)
-    load_article = partial(utils.load_article, db)
+    load_article = partial(utils.load_article, db, ARTICLE_TABLE)
     cursor = load_article(spec={"content": ""},
                           column=["url", "domain", "category"],
                           order={"uptime": 1},
@@ -54,7 +51,7 @@ def reset_article(r: Redis, db: Database, num: int=1000):
 def run_topic(r: Redis, db: Database, mode: str = "hot"):
     assert mode in ["hot", "all"]
     job_list = [JrjReport(), JrjNews(), SinaReport(), EastmoneyReport()]
-    save_article = partial(utils.save_article, db)
+    save_article = partial(utils.save_article, db, ARTICLE_TABLE)
     while r.exists(STOCK_KEY):
         code = r.lpop(STOCK_KEY).decode()
         logging.info("start stock {}...".format(code))
@@ -85,21 +82,18 @@ def run_article(r: Redis, db: Database):
         "sina_report": ["title", "content", "author", "org", "date"],
         "eastmoney_report": ["content"]
     }
-    save_article = partial(utils.save_article, db)
+    save_article = partial(utils.save_article, db, ARTICLE_TABLE)
     while r.exists(TOPIC_KEY):
         article = json.loads(r.lpop(TOPIC_KEY).decode())
         url = article.get("url")
         logging.info("start article {}...".format(url))
-        # noinspection PyProtectedMember
-        for k in set(article.keys()).difference(Article._fields):
-            del article[k]
-        article = Article(**article)
+        article = dict_to_article(article)
         job_type = article.domain + "_" + article.category
         job = job_map.get(job_type)
         if job:
             article = job.get_article_detail(article)
             column = column_map[job_type]
-            # noinspection PyProtectedMember
-            save_article(article._asdict(), column)
+            article = article_to_dict(article)
+            save_article(article, column)
             logging.info("save article success. url: {}".format(url))
     logging.info("job complete.")

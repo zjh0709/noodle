@@ -24,9 +24,9 @@ def job_list(node: str):
     if zk.exists(node_path):
         children = zk.get_children(node_path)
         for child in children:
-            job = zk.get_children(node_path + "/" + child)
-            for j in job:
-                print("{} {}".format(child, j))
+            jobs = zk.get_children(node_path + "/" + child)
+            for job in jobs:
+                print("{} {} {}".format(node, child, job))
     zk.stop()
     zk.close()
 
