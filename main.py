@@ -1,8 +1,7 @@
 import sys
 
 from command.spider_runner import reset_article, reset_topic, run_article, run_topic
-from command.spider_manager import job_list, job_kill
-
+from command.spider_manager import job_list, job_kill, job_check
 
 if __name__ == '__main__':
     p1 = sys.argv[1] if len(sys.argv) > 1 else None
@@ -25,4 +24,5 @@ if __name__ == '__main__':
         job_list(p2)
     elif p1 == "kill" and p2:
         job_kill(p2)
-
+    elif p1 == "check" and p2:
+        job_check(p2)
