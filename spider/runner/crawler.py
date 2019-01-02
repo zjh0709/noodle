@@ -93,7 +93,7 @@ def run_article(r: Redis, db: Database):
         # noinspection PyProtectedMember
         for k in set(article.keys()).difference(Article._fields):
             del article[k]
-            article = Article(**article)
+        article = Article(**article)
         job_type = article.domain + "_" + article.category
         job = job_map.get(job_type)
         if job:
