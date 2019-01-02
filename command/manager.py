@@ -1,15 +1,16 @@
-from spider.job.config import zookeeper_root
-from spider.job.client import get_zookeeper_client
 import os
 import signal
 import socket
 import logging
 import traceback
 
+from conn.client import zookeeper_client
+from conn.utils import get_node_path
+
 
 def job_kill(job_name: str):
     try:
-        hostname, pid = job_name.split("|", 1)
+        hostname, pid = [i[::-1] for i in job_name[::-1].split("_", 1)][::-1]
         if hostname == socket.gethostname():
             os.kill(int(pid), signal.SIGKILL)
     except ValueError:
@@ -18,14 +19,15 @@ def job_kill(job_name: str):
 
 
 def job_list(node: str):
-    zk = get_zookeeper_client()
-    node_path = "/".join([zookeeper_root, node])
+    zk = zookeeper_client()
+    node_path = get_node_path(node)
     children = []
     if zk.exists(node_path):
         children = zk.get_children(node_path)
+    for child in children:
+        job = zk.get_children(node_path + "/" + child)
+        for j in job:
+            print("{} {}".format(children, j))
     zk.stop()
     zk.close()
-    for job_name in children:
-        print(job_name)
-
 

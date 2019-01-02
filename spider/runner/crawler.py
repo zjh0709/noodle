@@ -9,29 +9,33 @@ from spider.website.eastmoney import EastmoneyReport
 
 import logging
 
-from spider.job.config import stock
-from spider.job import utils
+from spider.runner.config import stock
+from spider import utils
 
 from functools import partial
 from spider.entity import Article
 
 
+STOCK_KEY = "stock"
+TOPIC_KEY = "topic"
+
+
+def _reset_key(r: Redis, k: str):
+    logging.info("start reset `{}`...".format(k))
+    if r.exists(k) > 0:
+        logging.warning("key `{}` is exists. will delete it.".format(k))
+        r.delete(k)
+        logging.info("delete key `{}` success.".format(k))
+
+
 def reset_topic(r: Redis):
-    logging.info("start reset `stock`...")
-    if r.exists("stock") > 0:
-        logging.warning("key `stock` is exists. will delete it.")
-        r.delete("stock")
-        logging.info("delete key `stock` success.")
-    r.rpush("stock", *stock)
-    logging.info("reset `stock` success.")
+    _reset_key(r, STOCK_KEY)
+    r.rpush(STOCK_KEY, *stock)
+    logging.info("reset `{}` success.".format(STOCK_KEY))
 
 
 def reset_article(r: Redis, db: Database, num: int=1000):
-    logging.info("start restart `article`...")
-    if r.exists("article") > 0:
-        logging.warning("key `article` is exists. will delete it.")
-        r.delete("article")
-        logging.info("delete key `article` success.")
+    _reset_key(r, TOPIC_KEY)
     load_article = partial(utils.load_article, db)
     cursor = load_article(spec={"content": ""},
                           column=["url", "domain", "category"],
@@ -40,19 +44,19 @@ def reset_article(r: Redis, db: Database, num: int=1000):
     while True:
         try:
             article = cursor.next()
-            r.rpush("article", json.dumps(article))
+            r.rpush(TOPIC_KEY, json.dumps(article))
         except StopIteration:
             break
     cursor.close()
-    logging.info("reset `article` success.")
+    logging.info("reset `{}` success.".format(TOPIC_KEY))
 
 
 def run_topic(r: Redis, db: Database, mode: str = "hot"):
     assert mode in ["hot", "all"]
     job_list = [JrjReport(), JrjNews(), SinaReport(), EastmoneyReport()]
     save_article = partial(utils.save_article, db)
-    while r.exists("stock"):
-        code = r.lpop("stock").decode()
+    while r.exists(STOCK_KEY):
+        code = r.lpop(STOCK_KEY).decode()
         logging.info("start stock {}...".format(code))
         for job in job_list:
             if mode == "hot":
@@ -82,8 +86,8 @@ def run_article(r: Redis, db: Database):
         "eastmoney_report": ["content"]
     }
     save_article = partial(utils.save_article, db)
-    while r.exists("article"):
-        article = json.loads(r.lpop("article").decode())
+    while r.exists(TOPIC_KEY):
+        article = json.loads(r.lpop(TOPIC_KEY).decode())
         url = article.get("url")
         logging.info("start article {}...".format(url))
         # noinspection PyProtectedMember
@@ -99,4 +103,3 @@ def run_article(r: Redis, db: Database):
             save_article(article._asdict(), column)
             logging.info("save article success. url: {}".format(url))
     logging.info("job complete.")
-

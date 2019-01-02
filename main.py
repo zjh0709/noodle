@@ -1,5 +1,5 @@
 import argparse
-from command.spider import reset_article, reset_topic, run_article, run_topic
+from command.run_spider import reset_article, reset_topic, run_article, run_topic
 from command.manager import job_list, job_kill
 
 
