@@ -4,8 +4,9 @@ import socket
 import logging
 import traceback
 
-from conn.client import zookeeper_client
+from conn.client import zookeeper_client, redis_client
 from conn.utils import get_node_path
+from spider.runner.config import TOPIC_KEY, STOCK_KEY
 
 
 def job_kill(job_name: str):
@@ -29,4 +30,10 @@ def job_list(node: str):
                 print("{} {} {}".format(node, child, job))
     zk.stop()
     zk.close()
+
+
+def job_check(k: str):
+    assert k in (STOCK_KEY, TOPIC_KEY)
+    r = redis_client()
+    print("k ".format(k, r.llen(k)))
 
