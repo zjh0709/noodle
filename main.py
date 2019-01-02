@@ -16,7 +16,7 @@ if __name__ == '__main__':
     elif args.job == "spider" and args.sub == "topic" and args.parm == "all":
         run_topic(mode="all")
     elif args.job == "spider" and args.sub == "reset" and args.parm == "article":
-        reset_article()
+        reset_article(num=5000)
     elif args.job == "spider" and args.sub == "article":
         run_article()
     elif args.job == "manager" and args.sub == "list" and args.parm:
