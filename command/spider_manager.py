@@ -35,5 +35,5 @@ def job_list(node: str):
 def job_check(k: str):
     assert k in (STOCK_KEY, TOPIC_KEY)
     r = redis_client()
-    print("k ".format(k, r.llen(k)))
+    print("{} count {}".format(k, r.llen(k)))
 
