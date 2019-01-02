@@ -13,7 +13,7 @@ def save_article(db: Database, table: str, document: dict, column: list = None) 
     modified_count = 0
     if url:
         document = {"$set": document}
-        result = db.get_collection(table).replace_one({"url": url}, document, upsert=True)
+        result = db.get_collection(table).update_one({"url": url}, document, upsert=True)
         modified_count = result.modified_count
     return modified_count
 
