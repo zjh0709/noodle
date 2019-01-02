@@ -1,6 +1,6 @@
 import argparse
-from command.run_spider import reset_article, reset_topic, run_article, run_topic
-from command.manager import job_list, job_kill
+from command.spider_runner import reset_article, reset_topic, run_article, run_topic
+from command.spider_manager import job_list, job_kill
 
 
 if __name__ == '__main__':

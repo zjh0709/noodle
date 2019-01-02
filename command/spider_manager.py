@@ -21,13 +21,12 @@ def job_kill(job_name: str):
 def job_list(node: str):
     zk = zookeeper_client()
     node_path = get_node_path(node)
-    children = []
     if zk.exists(node_path):
         children = zk.get_children(node_path)
-    for child in children:
-        job = zk.get_children(node_path + "/" + child)
-        for j in job:
-            print("{} {}".format(children, j))
+        for child in children:
+            job = zk.get_children(node_path + "/" + child)
+            for j in job:
+                print("{} {}".format(child, j))
     zk.stop()
     zk.close()
 
