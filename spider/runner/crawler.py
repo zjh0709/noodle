@@ -3,7 +3,7 @@ import json
 from redis.client import Redis
 from pymongo.database import Database
 
-from spider.runner.config import STOCK_KEY, TOPIC_KEY, ARTICLE_TABLE
+from spider.runner.config import STOCK_KEY, TOPIC_KEY, ARTICLE_TABLE, STOCK_COMPLETE_KEY
 from spider.runner import utils
 from spider.website.sina import SinaReport
 from spider.website.jrj import JrjReport, JrjNews
@@ -27,6 +27,7 @@ def _reset_key(r: Redis, k: str):
 
 def reset_topic(r: Redis):
     _reset_key(r, STOCK_KEY)
+    _reset_key(r, STOCK_COMPLETE_KEY)
     r.rpush(STOCK_KEY, *stock)
     logging.info("reset `{}` success.".format(STOCK_KEY))
 
@@ -65,6 +66,7 @@ def run_topic(r: Redis, db: Database, mode: str = "hot"):
             for article in topics:
                 # noinspection PyProtectedMember
                 save_article(article._asdict())
+        r.lpush(STOCK_COMPLETE_KEY, code)
         logging.info("stock {} success.".format(code))
     logging.info("job complete.")
 
