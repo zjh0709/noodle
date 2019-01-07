@@ -1,4 +1,5 @@
 import json
+import traceback
 
 from redis.client import Redis
 from pymongo.database import Database
@@ -93,7 +94,12 @@ def run_article(r: Redis, db: Database):
         job_type = article.domain + "_" + article.category
         job = job_map.get(job_type)
         if job:
-            article = job.get_article_detail(article)
+            # noinspection PyBroadException
+            try:
+                article = job.get_article_detail(article)
+            except Exception:
+                traceback.print_exc()
+                continue
             column = column_map[job_type]
             article = article_to_dict(article)
             save_article(article, column)
