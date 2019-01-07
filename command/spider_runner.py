@@ -34,4 +34,9 @@ def run_article():
 
 
 if __name__ == '__main__':
-    reset_topic()
+    import logging
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                        datefmt='%a, %d %b %Y %H:%M:%S')
+    reset_article(5)
+    run_article()

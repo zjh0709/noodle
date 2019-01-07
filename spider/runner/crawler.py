@@ -80,10 +80,10 @@ def run_article(r: Redis, db: Database):
         "eastmoney_report": EastmoneyReport()
     }
     column_map = {
-        "jrj_report": ["content", "author", "date"],
-        "jrj_news": ["content", "org", "date"],
-        "sina_report": ["title", "content", "author", "org", "date"],
-        "eastmoney_report": ["content"]
+        "jrj_report": ["url", "content", "author", "date"],
+        "jrj_news": ["url", "content", "org", "date"],
+        "sina_report": ["url", "title", "content", "author", "org", "date"],
+        "eastmoney_report": ["url", "content"]
     }
     save_article = partial(utils.save_article, db, ARTICLE_TABLE)
     while r.exists(TOPIC_KEY):
@@ -97,6 +97,9 @@ def run_article(r: Redis, db: Database):
             article = job.get_article_detail(article)
             column = column_map[job_type]
             article = article_to_dict(article)
-            save_article(article, column)
-            logging.info("save article success. url: {}".format(url))
+            modified_count = save_article(article, column)
+            if modified_count > 0:
+                logging.info("save article success. url: {}".format(url))
+            else:
+                logging.info("save article failed. url: {}".format(url))
     logging.info("job complete.")
