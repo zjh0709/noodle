@@ -72,6 +72,9 @@ class JrjReport(Domain):
         except requests.Timeout:
             traceback.print_exc()
             return article
+        except requests.exceptions.ConnectionError:
+            traceback.print_exc()
+            return article
         r.encoding = "gb2312"
         soup = BeautifulSoup(r.text, "html.parser")
         # content
