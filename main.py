@@ -24,7 +24,7 @@ if __name__ == '__main__':
             run_topic(mode="hot")
     elif p1 == "article":
         run_article()
-    elif p1 == "":
+    elif p1 == "keyword":
         run_keyword()
     elif p1 == "list" and p2:
         job_list(p2)
