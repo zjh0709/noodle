@@ -6,7 +6,7 @@ import traceback
 
 from conn.client import zookeeper_client, redis_client
 from conn.utils import get_node_path
-from spider.runner.config import TOPIC_KEY, STOCK_KEY
+from spider.runner.config import TOPIC_KEY, STOCK_KEY, KEYWORD_KEY
 
 
 def job_kill(job_name: str):
@@ -33,7 +33,10 @@ def job_list(node: str):
 
 
 def job_check(k: str):
-    assert k in (STOCK_KEY, TOPIC_KEY)
+    assert k in (STOCK_KEY, TOPIC_KEY, KEYWORD_KEY)
     r = redis_client()
     print("{} count {}".format(k, r.llen(k)))
 
+
+if __name__ == '__main__':
+    job_check(KEYWORD_KEY)

@@ -1,5 +1,5 @@
 from conn import utils as conn_utils
-from spider.runner import crawler
+from spider.runner import crawler, extractor
 from conn import client
 
 
@@ -14,6 +14,14 @@ def reset_article(num=1000):
     r = client.redis_client()
     db = client.mongodb_client()
     crawler.reset_article(r, db, num)
+    db.client.close()
+
+
+@conn_utils.register_single_job(node="spider/reset_keyword")
+def reset_keyword(num=1000):
+    r = client.redis_client()
+    db = client.mongodb_client()
+    extractor.reset_keyword(r, db, num)
     db.client.close()
 
 
@@ -33,10 +41,18 @@ def run_article():
     db.client.close()
 
 
+@conn_utils.register_multiple_job(node="spider/run_keyword")
+def run_keyword():
+    r = client.redis_client()
+    db = client.mongodb_client()
+    extractor.run_keyword(r, db)
+    db.client.close()
+
+
 if __name__ == '__main__':
     import logging
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S')
-    reset_article(5)
-    run_article()
+    reset_keyword(3)
+    run_keyword()

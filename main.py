@@ -1,6 +1,7 @@
 import sys
 
-from command.spider_runner import reset_article, reset_topic, run_article, run_topic
+from command.spider_runner import reset_article, reset_topic, reset_keyword
+from command.spider_runner import run_article, run_topic, run_keyword
 from command.spider_manager import job_list, job_kill, job_check
 
 if __name__ == '__main__':
@@ -13,6 +14,9 @@ if __name__ == '__main__':
         elif p2 == "article":
             num = int(p3) if str(p3).isdecimal() else 5000
             reset_article(num=num)
+        elif p2 == "keyword":
+            num = int(p3) if str(p3).isdecimal() else 5000
+            reset_keyword(num=num)
     elif p1 == "topic":
         if p2 == "all":
             run_topic(mode="all")
@@ -20,6 +24,8 @@ if __name__ == '__main__':
             run_topic(mode="hot")
     elif p1 == "article":
         run_article()
+    elif p1 == "":
+        run_keyword()
     elif p1 == "list" and p2:
         job_list(p2)
     elif p1 == "kill" and p2:

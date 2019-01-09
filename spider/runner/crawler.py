@@ -1,5 +1,4 @@
 import json
-import traceback
 
 from redis.client import Redis
 from pymongo.database import Database
@@ -18,24 +17,16 @@ from functools import partial
 from spider.entity import article_to_dict, dict_to_article
 
 
-def _reset_key(r: Redis, k: str):
-    logging.info("start reset `{}`...".format(k))
-    if r.exists(k) > 0:
-        logging.warning("key `{}` is exists. will delete it.".format(k))
-        r.delete(k)
-        logging.info("delete key `{}` success.".format(k))
-
-
 def reset_topic(r: Redis):
-    _reset_key(r, STOCK_KEY)
-    _reset_key(r, STOCK_COMPLETE_KEY)
+    utils.reset_key(r, STOCK_KEY)
+    utils.reset_key(r, STOCK_COMPLETE_KEY)
     r.rpush(STOCK_KEY, *stock)
     logging.info("reset `{}` success.".format(STOCK_KEY))
 
 
 def reset_article(r: Redis, db: Database, num: int=1000):
-    _reset_key(r, TOPIC_KEY)
-    load_article = partial(utils.load_article, db, ARTICLE_TABLE)
+    utils.reset_key(r, TOPIC_KEY)
+    load_article = partial(utils.load_document, db, ARTICLE_TABLE)
     cursor = load_article(spec={"content": ""},
                           column=["url", "domain", "category"],
                           order={"uptime": 1},
@@ -53,7 +44,7 @@ def reset_article(r: Redis, db: Database, num: int=1000):
 def run_topic(r: Redis, db: Database, mode: str = "hot"):
     assert mode in ["hot", "all"]
     job_list = [JrjReport(), JrjNews(), SinaReport(), EastmoneyReport()]
-    save_article = partial(utils.save_article, db, ARTICLE_TABLE)
+    save_article = partial(utils.save_document, db, ARTICLE_TABLE)
     while r.exists(STOCK_KEY):
         code = r.lpop(STOCK_KEY).decode()
         logging.info("start stock {}...".format(code))
@@ -85,7 +76,7 @@ def run_article(r: Redis, db: Database):
         "sina_report": ["url", "title", "content", "author", "org", "date"],
         "eastmoney_report": ["url", "content"]
     }
-    save_article = partial(utils.save_article, db, ARTICLE_TABLE)
+    save_article = partial(utils.save_document, db, ARTICLE_TABLE)
     while r.exists(TOPIC_KEY):
         article = json.loads(r.lpop(TOPIC_KEY).decode())
         url = article.get("url")

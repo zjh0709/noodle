@@ -1,9 +1,13 @@
+import logging
+
 from pymongo.database import Database
 from pymongo.cursor import Cursor
 import datetime
 
+from redis import Redis
 
-def save_article(db: Database, table: str, document: dict, column: list = None) -> int:
+
+def save_document(db: Database, table: str, document: dict, column: list = None) -> int:
     uptime = datetime.datetime.now().strftime("%Y-%m-%d %X")
     if column:
         for k in set(document.keys()).difference(column):
@@ -18,8 +22,8 @@ def save_article(db: Database, table: str, document: dict, column: list = None) 
     return modified_count
 
 
-def load_article(db: Database, table: str, spec: dict = {}, column: list = [],
-                 order: dict = {}, limit: int = None) -> Cursor:
+def load_document(db: Database, table: str, spec: dict = {}, column: list = [],
+                  order: dict = {}, limit: int = None) -> Cursor:
     column = {c: 1 for c in column}
     column.update({"_id": 0})
     cur = db.get_collection(table).find(spec, column)
@@ -30,3 +34,9 @@ def load_article(db: Database, table: str, spec: dict = {}, column: list = [],
     return cur
 
 
+def reset_key(r: Redis, k: str):
+    logging.info("start reset `{}`...".format(k))
+    if r.exists(k) > 0:
+        logging.warning("key `{}` is exists. will delete it.".format(k))
+        r.delete(k)
+        logging.info("delete key `{}` success.".format(k))
