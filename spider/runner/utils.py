@@ -7,7 +7,7 @@ import datetime
 from redis import Redis
 
 
-def save_document(db: Database, table: str, document: dict, column: list = None) -> int:
+def save_article(db: Database, table: str, document: dict, column: list = None) -> int:
     uptime = datetime.datetime.now().strftime("%Y-%m-%d %X")
     if column:
         for k in set(document.keys()).difference(column):
@@ -18,6 +18,33 @@ def save_document(db: Database, table: str, document: dict, column: list = None)
     if url:
         document = {"$set": document}
         result = db.get_collection(table).update_one({"url": url}, document, upsert=True)
+        modified_count = result.modified_count
+    return modified_count
+
+
+def save_info(db: Database, table: str, document: dict) -> int:
+    uptime = datetime.datetime.now().strftime("%Y-%m-%d %X")
+    document.setdefault("uptime", uptime)
+    code = document.get("code")
+    name = document.get("name")
+    value = document.get("value")
+    modified_count = 0
+    if code and name and value:
+        document = {"$set": document}
+        result = db.get_collection(table).update_one({"code": code, "name": name, "value": value}, document, upsert=True)
+        modified_count = result.modified_count
+    return modified_count
+
+
+def save_word(db: Database, table: str, document: dict) -> int:
+    uptime = datetime.datetime.now().strftime("%Y-%m-%d %X")
+    document.setdefault("uptime", uptime)
+    code = document.get("code")
+    word = document.get("word")
+    modified_count = 0
+    if code and word:
+        document = {"$set": document}
+        result = db.get_collection(table).update_one({"code": code, "word": word}, document, upsert=True)
         modified_count = result.modified_count
     return modified_count
 

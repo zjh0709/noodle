@@ -41,3 +41,6 @@ class Domain(object):
 
     def get_topics(self):
         pass
+
+    def get_info(self, code: str):
+        pass

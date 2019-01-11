@@ -4,6 +4,8 @@ STOCK_COMPLETE_KEY = "stock_complete"
 KEYWORD_KEY = "keyword"
 
 ARTICLE_TABLE = "article"
+INFO_TABLE = "stock"
+WORD_TABLE = "word"
 
 stock = [
     "002305",
