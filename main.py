@@ -1,7 +1,7 @@
 import sys
 
 from command.spider_runner import reset_stock, reset_topic, reset_keyword
-from command.spider_runner import run_article, run_topic, run_keyword
+from command.spider_runner import run_article, run_topic, run_keyword, run_info
 from command.spider_manager import job_list, job_kill, job_check
 
 if __name__ == '__main__':
@@ -26,6 +26,8 @@ if __name__ == '__main__':
         run_article()
     elif p1 == "keyword":
         run_keyword()
+    elif p1 == "info":
+        run_info()
     elif p1 == "list" and p2:
         job_list(p2)
     elif p1 == "kill" and p2:
