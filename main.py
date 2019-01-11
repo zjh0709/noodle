@@ -1,6 +1,6 @@
 import sys
 
-from command.spider_runner import reset_article, reset_topic, reset_keyword
+from command.spider_runner import reset_stock, reset_topic, reset_keyword
 from command.spider_runner import run_article, run_topic, run_keyword
 from command.spider_manager import job_list, job_kill, job_check
 
@@ -9,11 +9,11 @@ if __name__ == '__main__':
     p2 = sys.argv[2] if len(sys.argv) > 2 else None
     p3 = sys.argv[3] if len(sys.argv) > 3 else None
     if p1 == "reset":
-        if p2 == "topic":
-            reset_topic()
-        elif p2 == "article":
+        if p2 == "stock":
+            reset_stock()
+        elif p2 == "topic":
             num = int(p3) if str(p3).isdecimal() else 5000
-            reset_article(num=num)
+            reset_topic(num=num)
         elif p2 == "keyword":
             num = int(p3) if str(p3).isdecimal() else 5000
             reset_keyword(num=num)
