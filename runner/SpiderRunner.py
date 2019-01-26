@@ -4,13 +4,20 @@ import logging
 import traceback
 
 import sys
+from logging.handlers import TimedRotatingFileHandler
 
 from conn.client import mongodb_client, redis_client
 from runner.config import STOCK_KEY, STOCKS, ARTICLE_TABLE, TOPIC_KEY
 from spider.website import WebSite
 
 
-console = logging.StreamHandler(sys.stderr)
+console = TimedRotatingFileHandler(filename="/mnt/d/log/noodle/spider.log",
+                                   when="D",
+                                   interval=1,
+                                   backupCount=10,
+                                   encoding=None,
+                                   delay=False,
+                                   utc=False)
 console.setFormatter(logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s'))
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
