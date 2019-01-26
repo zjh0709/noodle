@@ -1,36 +1,19 @@
+import logging
+
 import sys
 
-from command.spider_runner import reset_stock, reset_topic, reset_keyword
-from command.spider_runner import run_article, run_topic, run_keyword, run_info
-from command.spider_manager import job_list, job_kill, job_check
+from quartz.SpiderQuartz import SpiderScheduler
+from script import spider_script
 
 if __name__ == '__main__':
-    p1 = sys.argv[1] if len(sys.argv) > 1 else None
-    p2 = sys.argv[2] if len(sys.argv) > 2 else None
-    p3 = sys.argv[3] if len(sys.argv) > 3 else None
-    if p1 == "reset":
-        if p2 == "stock":
-            reset_stock()
-        elif p2 == "topic":
-            num = int(p3) if str(p3).isdecimal() else 5000
-            reset_topic(num=num)
-        elif p2 == "keyword":
-            num = int(p3) if str(p3).isdecimal() else 5000
-            reset_keyword(num=num)
-    elif p1 == "topic":
-        if p2 == "all":
-            run_topic(mode="all")
-        else:
-            run_topic(mode="hot")
-    elif p1 == "article":
-        run_article()
-    elif p1 == "keyword":
-        run_keyword()
-    elif p1 == "info":
-        run_info()
-    elif p1 == "list" and p2:
-        job_list(p2)
-    elif p1 == "kill" and p2:
-        job_kill(p2)
-    elif p1 == "check" and p2:
-        job_check(p2)
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                        datefmt='%a, %d %b %Y %H:%M:%S')
+    cmd = sys.argv[1] if len(sys.argv) > 1 else None
+    if cmd == "start":
+        spider_scheduler = SpiderScheduler()
+        spider_scheduler.start()
+    elif cmd == "reset":
+        spider_script.reset_stock()
+    elif cmd == "all":
+        spider_script.run_topic("overwrite")

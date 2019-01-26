@@ -3,15 +3,15 @@ import traceback
 import requests
 from bs4 import BeautifulSoup
 
-from spider.domain import Domain
+from spider.website import WebSite
 
 
-class HexunBase(Domain):
+class HexunBase(WebSite):
 
     def __init__(self):
-        super().__init__()
         self.domain = "hexun"
         self.category = "base"
+        super().__init__()
 
     def get_info(self, code: str):
         info = {}
@@ -34,5 +34,5 @@ class HexunBase(Domain):
 
 
 if __name__ == '__main__':
-    m = HexunBase()
-    print(m.get_info("600597"))
+    job = HexunBase()
+    print(job.get_info("600597"))

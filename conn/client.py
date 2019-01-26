@@ -13,7 +13,7 @@ from conn.config import mongodb_host, mongodb_port, mongodb_database, redis_host
 def mongodb_client() -> Database:
     client = MongoClient(host=mongodb_host, port=mongodb_port)
     try:
-        logging.info("mongodb info:")
+        logging.debug("mongodb info:")
         # logging.info(client.server_info())
         client = client.get_database(mongodb_database)
     except ServerSelectionTimeoutError:
@@ -25,7 +25,7 @@ def mongodb_client() -> Database:
 def redis_client() -> Redis:
     client = Redis(host=redis_host, port=redis_port)
     try:
-        logging.info("redis info:")
+        logging.debug("redis info:")
         # logging.info(client.info())
     except ConnectionError:
         logging.warning("connect to redis error.")
@@ -37,7 +37,7 @@ def zookeeper_client() -> KazooClient:
     client = KazooClient(hosts=zookeeper_host)
     try:
         client.start(timeout=10)
-        logging.info("zookeeper info:")
+        logging.debug("zookeeper info:")
         # logging.info(client.server_version())
     except KazooTimeoutError:
         logging.warning("connect to zookeeper error.")

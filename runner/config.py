@@ -7,7 +7,7 @@ ARTICLE_TABLE = "article"
 INFO_TABLE = "stock"
 WORD_TABLE = "word"
 
-stock = [
+STOCKS = [
     "002305",
     "601700",
     "000536",

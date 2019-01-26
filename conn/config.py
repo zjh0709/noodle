@@ -5,4 +5,4 @@ mongodb_database = "noodle"
 redis_host = "master"
 redis_port = 6380
 zookeeper_host = "master:2182"
-zookeeper_root = "/noodle"
+zookeeper_root = "/noodle/"

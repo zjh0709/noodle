@@ -1,11 +1,18 @@
 from flask import Flask
+from flask import g
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def hello_world():
-    return "hello world!"
+    g.hello = "hello world!"
+    return g.hello
+
+
+@app.route("/hey")
+def hey_world():
+    return g.hello
 
 
 if __name__ == '__main__':
