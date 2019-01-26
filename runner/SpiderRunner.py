@@ -4,20 +4,17 @@ import logging
 import traceback
 
 import sys
-from logging.handlers import TimedRotatingFileHandler
+from logging.handlers import RotatingFileHandler
 
 from conn.client import mongodb_client, redis_client
 from runner.config import STOCK_KEY, STOCKS, ARTICLE_TABLE, TOPIC_KEY
 from spider.website import WebSite
 
-
-console = TimedRotatingFileHandler(filename="/mnt/d/log/noodle/spider.log",
-                                   when="D",
-                                   interval=1,
-                                   backupCount=10,
-                                   encoding=None,
-                                   delay=False,
-                                   utc=False)
+console = RotatingFileHandler(filename="/mnt/d/log/noodle/spider.log",
+                              mode="a",
+                              maxBytes=100*1024*1024,
+                              backupCount=3
+                              )
 console.setFormatter(logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s'))
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -25,7 +22,6 @@ logger.addHandler(console)
 
 
 class SpiderRunner(object):
-
     db = mongodb_client()
     r = redis_client()
     table = ARTICLE_TABLE
@@ -81,7 +77,7 @@ class SpiderRunner(object):
         data = self.r.lpop(self.topic_key)
         return data.decode("utf-8") if data else None
 
-    def topic_runner(self, website: WebSite, code: str, mode: str="append") -> int:
+    def topic_runner(self, website: WebSite, code: str, mode: str = "append") -> int:
         """
         跑topic
         :param code:
@@ -134,5 +130,6 @@ class SpiderRunner(object):
 
 if __name__ == '__main__':
     from spider.websites import sina
+
     job = SpiderRunner()
     job.topic_runner(sina.SinaReport(), "600597")
