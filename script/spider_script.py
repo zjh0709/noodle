@@ -1,8 +1,4 @@
-import logging
-
-import sys
-
-from runner.SpiderRunner import SpiderRunner
+from runner.SpiderRunner import SpiderRunner, logger
 from spider.websites import sina, jrj, wangyi, eastmoney, hexun
 
 

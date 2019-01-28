@@ -3,7 +3,6 @@ import json
 import logging
 import traceback
 
-import sys
 from logging.handlers import RotatingFileHandler
 
 from conn.client import mongodb_client, redis_client
@@ -13,8 +12,7 @@ from spider.website import WebSite
 console = RotatingFileHandler(filename="/mnt/d/log/noodle/spider.log",
                               mode="a",
                               maxBytes=100*1024*1024,
-                              backupCount=3
-                              )
+                              backupCount=3)
 console.setFormatter(logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s'))
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
