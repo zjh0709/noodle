@@ -30,9 +30,9 @@ class SinaReport(WebSite):
             traceback.print_exc()
         except requests.Timeout:
             traceback.print_exc()
-        return [dict(domain=page.get("domain",""),
+        return [dict(domain=page.get("domain", ""),
                      url=link.get("href"),
-                     code=page.get("code",""),
+                     code=page.get("code", ""),
                      title=link.get("title"),
                      content="",
                      date="",
@@ -46,7 +46,7 @@ class SinaReport(WebSite):
         page = self.first_page(code)
         pages = [page]
         try:
-            r = requests.get(page["url"],  headers=self.headers, timeout=5)
+            r = requests.get(page["url"], headers=self.headers, timeout=5)
             r.encoding = "gb2312"
             soup = BeautifulSoup(r.text, "html.parser")
             dom = soup.find_all("a", onclick=re.compile("set_page_num"))
@@ -100,9 +100,169 @@ class SinaReport(WebSite):
         return article
 
 
+class SinaInfo(WebSite):
+    def __init__(self):
+        self.domain = "sina"
+        self.category = "info"
+        super().__init__()
+
+    def get_info(self, code: str):
+        result = []
+        # 行业、概念
+        url = "http://vip.stock.finance.sina.com.cn/corp/go.php/vCI_CorpOtherInfo/stockid/{}/menu_num/2.phtml".format(
+            code)
+        try:
+            r = requests.get(url, headers=self.headers, timeout=5)
+            r.encoding = "gbk"
+            soup = BeautifulSoup(r.text, "lxml")
+            tables = soup.find_all("table", class_="comInfo1")
+            for table in tables:
+                bk = ""
+                for idx, tr in enumerate(table.find_all("tr")):
+                    if idx == 0:
+                        if "所属" not in tr.text:
+                            break
+                        bk = tr.text.replace("所属", "").replace("板块", "").strip()
+                    else:
+                        if not bk:
+                            break
+                        tds = tr.find_all("td")
+                        if len(tds) > 1:
+                            result.append((bk, tds[0].text, ""))
+        except requests.Timeout:
+            traceback.print_exc()
+        # 股东
+        url = "http://vip.stock.finance.sina.com.cn/corp/go.php/vCI_StockHolder/stockid/{}/displaytype/30.phtml".format(
+            code)
+        try:
+            r = requests.get(url, headers=self.headers, timeout=5)
+            r.encoding = "gbk"
+            soup = BeautifulSoup(r.text, "lxml")
+            table = soup.find(id="Table1")
+            is_start = False
+            if table:
+                for tr in table.find_all("tr"):
+                    tds = tr.find_all("td")
+                    if len(tds) == 5 and "编号" not in tds[0].text:
+                        is_start = True
+                        v = tds[1].text
+                        o = re.search("[\d.]+", tds[3].text).group() if re.search("[\d.]+", tds[3].text) else ""
+                        result.append(("股东", v, o + "%"))
+                    elif len(tds) < 5 and is_start:
+                        break
+        except requests.Timeout:
+            traceback.print_exc()
+        return result
+
+    def get_balance(self, code: str):
+        result = []
+        url = "http://money.finance.sina.com.cn/corp/go.php/vFD_BalanceSheet/stockid/{}/ctrl/part/displaytype/4.phtml".format(
+            code)
+        try:
+            r = requests.get(url, headers=self.headers, timeout=5)
+            r.encoding = "gbk"
+            soup = BeautifulSoup(r.text, "lxml")
+            table = soup.find(id="BalanceSheetNewTable0")
+            o = ""
+            if table:
+                for tr in table.find_all("tr"):
+                    tds = tr.find_all("td")
+                    if len(tds) <= 1:
+                        continue
+                    n = tds[0].text
+                    v = tds[1].text.replace(",", "")
+                    if n == "报表日期":
+                        o = v
+                        continue
+                    if v:
+                        result.append((n, v, o))
+        except requests.Timeout:
+            traceback.print_exc()
+        return result
+
+    def get_cashflow(self, code: str):
+        result = []
+        url = "http://money.finance.sina.com.cn/corp/go.php/vFD_CashFlow/stockid/{}/ctrl/part/displaytype/4.phtml".format(
+            code)
+        try:
+            r = requests.get(url, headers=self.headers, timeout=5)
+            r.encoding = "gbk"
+            soup = BeautifulSoup(r.text, "lxml")
+            table = soup.find(id="ProfitStatementNewTable0")
+            o = ""
+            if table:
+                for tr in table.find_all("tr"):
+                    tds = tr.find_all("td")
+                    if len(tds) <= 1:
+                        continue
+                    n = tds[0].text
+                    v = tds[1].text.replace(",", "")
+                    if n == "报表日期":
+                        o = v
+                        continue
+                    if v:
+                        result.append((n, v, o))
+        except requests.Timeout:
+            traceback.print_exc()
+        return result
+
+    def get_profit(self, code: str):
+        result = []
+        url = "http://money.finance.sina.com.cn/corp/go.php/vFD_ProfitStatement/stockid/{" \
+              "}/ctrl/part/displaytype/4.phtml".format(code)
+        try:
+            r = requests.get(url, headers=self.headers, timeout=5)
+            r.encoding = "gbk"
+            soup = BeautifulSoup(r.text, "lxml")
+            table = soup.find(id="ProfitStatementNewTable0")
+            o = ""
+            if table:
+                for tr in table.find_all("tr"):
+                    tds = tr.find_all("td")
+                    if len(tds) <= 1:
+                        continue
+                    n = tds[0].text
+                    v = tds[1].text.replace(",", "")
+                    if n == "报表日期":
+                        o = v
+                        continue
+                    if v:
+                        result.append((n, v, o))
+        except requests.Timeout:
+            traceback.print_exc()
+        return result
+
+    def get_summary(self, code: str):
+        result = []
+        url = "http://money.finance.sina.com.cn/corp/go.php/vFD_FinanceSummary/stockid/{}/displaytype/4.phtml".format(
+            code)
+        try:
+            r = requests.get(url, headers=self.headers, timeout=5)
+            r.encoding = "gbk"
+            soup = BeautifulSoup(r.text, "lxml")
+            table = soup.find(id="FundHoldSharesTable")
+            o = ""
+            if table:
+                for tr in table.find_all("tr"):
+                    tds = tr.find_all("td")
+                    if len(tds) <= 1:
+                        continue
+                    n = tds[0].text
+                    v = tds[1].text.replace(",", "")
+                    if n == "截止日期":
+                        if o:
+                            break
+                        else:
+                            o = v
+                        continue
+                    if v and n:
+                        v = v.replace("元", "") if "元" in v else "--"
+                        result.append((n, v, o))
+        except requests.Timeout:
+            traceback.print_exc()
+        return result
+
+
 if __name__ == '__main__':
-    job = SinaReport()
-    p = job.first_page("600597")
-    t = job.get_topics_by_page(p)
-    print(t[0])
-    print(job.get_article_detail(t[0]))
+    job = SinaInfo()
+    print(job.get_summary("600597"))

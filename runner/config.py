@@ -4,7 +4,11 @@ STOCK_COMPLETE_KEY = "stock_complete"
 KEYWORD_KEY = "keyword"
 
 ARTICLE_TABLE = "article"
-INFO_TABLE = "stock"
+INFO_TABLE = "info"
+SUMMARY_TABLE = "summary"
+BALANCE_TABLE = "balance"
+PROFIT_TABLE = "profit"
+CASHFLOW_TABLE = "cashflow"
 WORD_TABLE = "word"
 
 STOCKS = [

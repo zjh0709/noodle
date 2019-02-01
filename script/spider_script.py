@@ -53,5 +53,29 @@ def run_article():
         spider_runner.article_runner(eastmoney_report, topic)
 
 
+def run_info():
+    spider_runner = SpiderRunner()
+    sina_info = sina.SinaInfo()
+    hexun_info = hexun.HexunInfo()
+    while True:
+        code = spider_runner.next_stock()
+        if code is None:
+            logger.warning("no stock!")
+            break
+        spider_runner.info_runner(sina_info, code)
+        spider_runner.info_runner(hexun_info, code)
+
+
+def run_finance():
+    spider_runner = SpiderRunner()
+    sina_info = sina.SinaInfo()
+    while True:
+        code = spider_runner.next_stock()
+        if code is None:
+            logger.warning("no stock!")
+            break
+        spider_runner.finance_runner(sina_info, code)
+
+
 if __name__ == '__main__':
-    run_topic()
+    run_finance()

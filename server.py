@@ -1,4 +1,4 @@
-from webservice.hello import app as application
+from webservice.application import app as application
 
 
 if __name__ == '__main__':

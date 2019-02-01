@@ -4,12 +4,12 @@ from runner.SpiderRunner import SpiderRunner
 import logging
 
 
-def get_stock_len() -> int:
-    return SpiderRunner().get_stock_len()
+def get_stock_left() -> list:
+    return SpiderRunner().get_stock_left()
 
 
-def get_topic_len() -> int:
-    return SpiderRunner().get_topic_len()
+def get_topic_left() -> list:
+    return SpiderRunner().get_topic_left()
 
 
 def get_jobs() -> list():

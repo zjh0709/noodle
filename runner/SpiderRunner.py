@@ -6,7 +6,8 @@ import traceback
 from logging.handlers import RotatingFileHandler
 
 from conn.client import mongodb_client, redis_client
-from runner.config import STOCK_KEY, STOCKS, ARTICLE_TABLE, TOPIC_KEY
+from runner.config import STOCK_KEY, STOCKS, ARTICLE_TABLE, TOPIC_KEY, INFO_TABLE, SUMMARY_TABLE, BALANCE_TABLE, \
+    CASHFLOW_TABLE, PROFIT_TABLE
 from spider.website import WebSite
 
 console = RotatingFileHandler(filename="/mnt/d/log/noodle/spider.log",
@@ -22,18 +23,23 @@ logger.addHandler(console)
 class SpiderRunner(object):
     db = mongodb_client()
     r = redis_client()
-    table = ARTICLE_TABLE
+    article_table = ARTICLE_TABLE
+    info_table = INFO_TABLE
+    summary_table = SUMMARY_TABLE
+    balance_table = BALANCE_TABLE
+    cashflow_table = CASHFLOW_TABLE
+    profit_table = PROFIT_TABLE
     stock_key = STOCK_KEY
     topic_key = TOPIC_KEY
 
     def __init__(self):
         pass
 
-    def get_stock_len(self) -> int:
-        return self.r.llen(self.stock_key)
+    def get_stock_left(self) -> list:
+        return self.r.lrange(self.stock_key, 0, 5000)
 
-    def get_topic_len(self) -> int:
-        return self.r.llen(self.topic_key)
+    def get_topic_left(self) -> list:
+        return self.r.lrange(self.topic_key, 0, 5000)
 
     def reset_stock(self) -> None:
         """
@@ -52,7 +58,7 @@ class SpiderRunner(object):
         """
         logger.info("start reset topic")
         self.r.delete(self.topic_key)
-        cur = self.db.get_collection(self.table) \
+        cur = self.db.get_collection(self.article_table) \
             .find({"$or": [{"content": ""}, {"content": {"$exists": False}}]},
                   {"_id": 0, "url": 1, "domain": 1, "category": 1}).limit(5000)
         for article in cur:
@@ -111,6 +117,39 @@ class SpiderRunner(object):
             traceback.print_exc()
         return flag
 
+    def info_runner(self, website: WebSite, code: str) -> int:
+        flag = 0
+        tps = website.get_info(code)
+        for tp in tps if tps else []:
+            flag += 1
+            self.save_info(code, self.info_table, tp)
+            logger.info(code + " " + " ".join(tp))
+        return flag
+
+    def finance_runner(self, website: WebSite, code: str) -> int:
+        flag = 0
+        tps = website.get_summary(code)
+        for tp in tps if tps else []:
+            flag += 1
+            self.save_finance(code, self.summary_table, tp)
+            logger.info(code + " " + " ".join(tp))
+        tps = website.get_balance(code)
+        for tp in tps if tps else []:
+            flag += 1
+            self.save_finance(code, self.balance_table, tp)
+            logger.info(code + " " + " ".join(tp))
+        tps = website.get_cashflow(code)
+        for tp in tps if tps else []:
+            flag += 1
+            self.save_finance(code, self.cashflow_table, tp)
+            logger.info(code + " " + " ".join(tp))
+        tps = website.get_profit(code)
+        for tp in tps if tps else []:
+            flag += 1
+            self.save_finance(code, self.profit_table, tp)
+            logger.info(code + " " + " ".join(tp))
+        return flag
+
     def save_article(self, document: dict) -> int:
         modified_count = -1
         document = {k: v for k, v in document.items() if v}
@@ -118,11 +157,33 @@ class SpiderRunner(object):
             url = document["url"]
             document["uptime"] = datetime.datetime.now().strftime("%Y-%m-%d %X")
             document = {"$set": document}
-            result = self.db.get_collection(self.table) \
+            result = self.db.get_collection(self.article_table) \
                 .update_one({"url": url}, document, upsert=True)
             modified_count = result.modified_count
         except KeyError:
             traceback.print_exc()
+        return modified_count
+
+    def save_info(self, code: str, table: str, tp: tuple) -> int:
+        assert len(tp) == 3
+        n, v, o = tp
+        document = {"code": code, "name": n, "value": v, "other": o,
+                    "uptime": datetime.datetime.now().strftime("%Y-%m-%d %X")}
+        document = {"$set": document}
+        result = self.db.get_collection(table) \
+            .update_one({"code": code, "name": n, "value": v}, document, upsert=True)
+        modified_count = result.modified_count
+        return modified_count
+
+    def save_finance(self, code: str, table: str, tp: tuple) -> int:
+        assert len(tp) == 3
+        n, v, o = tp
+        document = {"code": code, "name": n, "value": v, "other": o,
+                    "uptime": datetime.datetime.now().strftime("%Y-%m-%d %X")}
+        document = {"$set": document}
+        result = self.db.get_collection(table) \
+            .update_one({"code": code, "name": n}, document, upsert=True)
+        modified_count = result.modified_count
         return modified_count
 
 

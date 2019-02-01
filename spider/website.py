@@ -70,16 +70,48 @@ class WebSite(object):
         """
         pass
 
-    def get_topics(self):
+    def get_topics(self) -> list:
         """
         返回无CODE目录
         :return:
         """
         pass
 
-    def get_info(self, code: str):
+    def get_info(self, code: str) -> list:
         """
         返回CODE详情
+        :param code:
+        :return:
+        """
+        pass
+
+    def get_balance(self, code: str) -> list:
+        """
+        返回资产负债表
+        :param code:
+        :return:
+        """
+        pass
+
+    def get_cashflow(self, code: str) -> list:
+        """
+        返回现金流量表
+        :param code:
+        :return:
+        """
+        pass
+
+    def get_profit(self, code: str) -> list:
+        """
+        返回利润表
+        :param code:
+        :return:
+        """
+        pass
+
+    def get_summary(self, code: str) -> list:
+        """
+        返回财务摘要
         :param code:
         :return:
         """
