@@ -114,7 +114,7 @@ class SinaInfo(WebSite):
         try:
             r = requests.get(url, headers=self.headers, timeout=5)
             r.encoding = "gbk"
-            soup = BeautifulSoup(r.text, "lxml")
+            soup = BeautifulSoup(r.text, "html.parser")
             tables = soup.find_all("table", class_="comInfo1")
             for table in tables:
                 bk = ""
@@ -137,7 +137,7 @@ class SinaInfo(WebSite):
         try:
             r = requests.get(url, headers=self.headers, timeout=5)
             r.encoding = "gbk"
-            soup = BeautifulSoup(r.text, "lxml")
+            soup = BeautifulSoup(r.text, "html.parser")
             table = soup.find(id="Table1")
             is_start = False
             if table:
@@ -161,7 +161,7 @@ class SinaInfo(WebSite):
         try:
             r = requests.get(url, headers=self.headers, timeout=5)
             r.encoding = "gbk"
-            soup = BeautifulSoup(r.text, "lxml")
+            soup = BeautifulSoup(r.text, "html.parser")
             table = soup.find(id="BalanceSheetNewTable0")
             o = ""
             if table:
@@ -187,7 +187,7 @@ class SinaInfo(WebSite):
         try:
             r = requests.get(url, headers=self.headers, timeout=5)
             r.encoding = "gbk"
-            soup = BeautifulSoup(r.text, "lxml")
+            soup = BeautifulSoup(r.text, "html.parser")
             table = soup.find(id="ProfitStatementNewTable0")
             o = ""
             if table:
@@ -213,7 +213,7 @@ class SinaInfo(WebSite):
         try:
             r = requests.get(url, headers=self.headers, timeout=5)
             r.encoding = "gbk"
-            soup = BeautifulSoup(r.text, "lxml")
+            soup = BeautifulSoup(r.text, "html.parser")
             table = soup.find(id="ProfitStatementNewTable0")
             o = ""
             if table:
@@ -239,7 +239,7 @@ class SinaInfo(WebSite):
         try:
             r = requests.get(url, headers=self.headers, timeout=5)
             r.encoding = "gbk"
-            soup = BeautifulSoup(r.text, "lxml")
+            soup = BeautifulSoup(r.text, "html.parser")
             table = soup.find(id="FundHoldSharesTable")
             o = ""
             if table:
