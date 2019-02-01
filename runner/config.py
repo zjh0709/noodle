@@ -5,10 +5,8 @@ KEYWORD_KEY = "keyword"
 
 ARTICLE_TABLE = "article"
 INFO_TABLE = "info"
-SUMMARY_TABLE = "summary"
-BALANCE_TABLE = "balance"
-PROFIT_TABLE = "profit"
-CASHFLOW_TABLE = "cashflow"
+FINANCE_TABLE = "finance"
+
 WORD_TABLE = "word"
 
 STOCKS = [

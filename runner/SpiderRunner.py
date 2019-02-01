@@ -2,12 +2,10 @@ import datetime
 import json
 import logging
 import traceback
-
 from logging.handlers import RotatingFileHandler
 
 from conn.client import mongodb_client, redis_client
-from runner.config import STOCK_KEY, STOCKS, ARTICLE_TABLE, TOPIC_KEY, INFO_TABLE, SUMMARY_TABLE, BALANCE_TABLE, \
-    CASHFLOW_TABLE, PROFIT_TABLE
+from runner.config import STOCK_KEY, STOCKS, ARTICLE_TABLE, TOPIC_KEY, INFO_TABLE, FINANCE_TABLE
 from spider.website import WebSite
 
 console = RotatingFileHandler(filename="/mnt/d/log/noodle/spider.log",
@@ -23,12 +21,11 @@ logger.addHandler(console)
 class SpiderRunner(object):
     db = mongodb_client()
     r = redis_client()
+    # mongodb
     article_table = ARTICLE_TABLE
     info_table = INFO_TABLE
-    summary_table = SUMMARY_TABLE
-    balance_table = BALANCE_TABLE
-    cashflow_table = CASHFLOW_TABLE
-    profit_table = PROFIT_TABLE
+    finance_table = FINANCE_TABLE
+    # redis
     stock_key = STOCK_KEY
     topic_key = TOPIC_KEY
 
@@ -122,7 +119,7 @@ class SpiderRunner(object):
         tps = website.get_info(code)
         for tp in tps if tps else []:
             flag += 1
-            self.save_info(code, self.info_table, tp)
+            self.save_info(code, tp)
             logger.info(code + " " + " ".join(tp))
         return flag
 
@@ -131,22 +128,22 @@ class SpiderRunner(object):
         tps = website.get_summary(code)
         for tp in tps if tps else []:
             flag += 1
-            self.save_finance(code, self.summary_table, tp)
+            self.save_finance(code, "summary", tp)
             logger.info(code + " " + " ".join(tp))
         tps = website.get_balance(code)
         for tp in tps if tps else []:
             flag += 1
-            self.save_finance(code, self.balance_table, tp)
+            self.save_finance(code, "balance", tp)
             logger.info(code + " " + " ".join(tp))
         tps = website.get_cashflow(code)
         for tp in tps if tps else []:
             flag += 1
-            self.save_finance(code, self.cashflow_table, tp)
+            self.save_finance(code, "cashflow", tp)
             logger.info(code + " " + " ".join(tp))
         tps = website.get_profit(code)
         for tp in tps if tps else []:
             flag += 1
-            self.save_finance(code, self.profit_table, tp)
+            self.save_finance(code, "profit", tp)
             logger.info(code + " " + " ".join(tp))
         return flag
 
@@ -164,25 +161,25 @@ class SpiderRunner(object):
             traceback.print_exc()
         return modified_count
 
-    def save_info(self, code: str, table: str, tp: tuple) -> int:
+    def save_info(self, code: str, tp: tuple) -> int:
         assert len(tp) == 3
         n, v, o = tp
         document = {"code": code, "name": n, "value": v, "other": o,
                     "uptime": datetime.datetime.now().strftime("%Y-%m-%d %X")}
         document = {"$set": document}
-        result = self.db.get_collection(table) \
+        result = self.db.get_collection(self.info_table) \
             .update_one({"code": code, "name": n, "value": v}, document, upsert=True)
         modified_count = result.modified_count
         return modified_count
 
-    def save_finance(self, code: str, table: str, tp: tuple) -> int:
+    def save_finance(self, code: str, category: str, tp: tuple) -> int:
         assert len(tp) == 3
         n, v, o = tp
-        document = {"code": code, "name": n, "value": v, "other": o,
+        document = {"code": code, "category": category, "name": n, "value": v, "other": o,
                     "uptime": datetime.datetime.now().strftime("%Y-%m-%d %X")}
         document = {"$set": document}
-        result = self.db.get_collection(table) \
-            .update_one({"code": code, "name": n}, document, upsert=True)
+        result = self.db.get_collection(self.finance_table) \
+            .update_one({"code": code, "category": category, "name": n}, document, upsert=True)
         modified_count = result.modified_count
         return modified_count
 
