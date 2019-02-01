@@ -1,5 +1,3 @@
-import logging
-
 import sys
 
 from quartz.SpiderQuartz import SpiderScheduler
@@ -12,8 +10,12 @@ if __name__ == '__main__':
         spider_scheduler.start()
     elif cmd == "reset":
         spider_script.reset_stock()
+    elif cmd == "topic":
+        spider_script.run_topic()
     elif cmd == "all":
         spider_script.run_topic("overwrite")
+    elif cmd == "article":
+        spider_script.run_article()
     elif cmd == "finance":
         spider_script.run_finance()
     elif cmd == "info":

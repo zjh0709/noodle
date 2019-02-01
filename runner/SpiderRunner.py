@@ -129,22 +129,22 @@ class SpiderRunner(object):
         for tp in tps if tps else []:
             flag += 1
             self.save_finance(code, "summary", tp)
-            logger.info(code + " " + " ".join(tp))
+        logger.info("{} summary {} records".format(code, len(tps)))
         tps = website.get_balance(code)
         for tp in tps if tps else []:
             flag += 1
             self.save_finance(code, "balance", tp)
-            logger.info(code + " " + " ".join(tp))
+        logger.info("{} balance {} records".format(code, len(tps)))
         tps = website.get_cashflow(code)
         for tp in tps if tps else []:
             flag += 1
             self.save_finance(code, "cashflow", tp)
-            logger.info(code + " " + " ".join(tp))
+        logger.info("{} cashflow {} records".format(code, len(tps)))
         tps = website.get_profit(code)
         for tp in tps if tps else []:
             flag += 1
             self.save_finance(code, "profit", tp)
-            logger.info(code + " " + " ".join(tp))
+        logger.info("{} profit {} records".format(code, len(tps)))
         return flag
 
     def save_article(self, document: dict) -> int:
