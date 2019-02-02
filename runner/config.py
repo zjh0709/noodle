@@ -1,6 +1,5 @@
 STOCK_KEY = "stock"
 TOPIC_KEY = "topic"
-STOCK_COMPLETE_KEY = "stock_complete"
 KEYWORD_KEY = "keyword"
 
 ARTICLE_TABLE = "article"

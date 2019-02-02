@@ -1,13 +1,18 @@
 import sys
 
 from quartz.SpiderQuartz import SpiderScheduler
+from quartz.ModelQuartz import ModelQuartz
 from script import spider_script
+
 
 if __name__ == '__main__':
     cmd = sys.argv[1] if len(sys.argv) > 1 else None
-    if cmd == "start":
+    if cmd == "start1":
         spider_scheduler = SpiderScheduler()
         spider_scheduler.start()
+    elif cmd == "start2":
+        model_scheduler = ModelQuartz()
+        model_scheduler.start()
     elif cmd == "reset":
         spider_script.reset_stock()
     elif cmd == "topic":

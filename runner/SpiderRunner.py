@@ -51,7 +51,7 @@ class SpiderRunner(object):
 
     def reset_stock(self) -> None:
         """
-        重置redis中的stock队列 [url,url,...]
+        重置redis中的stock队列 [code,code,...]
         :return:
         """
         logger.info("start reset stock")
@@ -61,7 +61,7 @@ class SpiderRunner(object):
 
     def clear_topic(self) -> None:
         """
-        清空redis中的topic队列
+        清空redis中的topic队列 [{url,domain,category},{url,domain,category},...]
         :return:
         """
         logger.info("start clear topic")
@@ -79,7 +79,7 @@ class SpiderRunner(object):
             .find({"$or": [{"content": ""}, {"content": {"$exists": False}}]},
                   {"_id": 0, "url": 1, "domain": 1, "category": 1})\
             .sort([("uptime", pymongo.ASCENDING)])\
-            .limit(3000)
+            .limit(10000)
         for article in cur:
             self.r.rpush(self.topic_key, json.dumps(article))
         logger.info("reset topic success.")
@@ -140,32 +140,32 @@ class SpiderRunner(object):
         flag = 0
         tps = website.get_info(code)
         for tp in tps if tps else []:
-            flag += 1
             self.save_info(code, tp)
-            logger.info(code + " " + " ".join(tp))
+        flag += len(tps)
+        logger.info("{} info {} records".format(code, len(tps)))
         return flag
 
     def finance_runner(self, website: WebSite, code: str) -> int:
         flag = 0
         tps = website.get_summary(code)
         for tp in tps if tps else []:
-            flag += 1
             self.save_finance(code, "summary", tp)
+        flag += len(tps)
         logger.info("{} summary {} records".format(code, len(tps)))
         tps = website.get_balance(code)
         for tp in tps if tps else []:
-            flag += 1
             self.save_finance(code, "balance", tp)
+        flag += len(tps)
         logger.info("{} balance {} records".format(code, len(tps)))
         tps = website.get_cashflow(code)
         for tp in tps if tps else []:
-            flag += 1
             self.save_finance(code, "cashflow", tp)
+        flag += len(tps)
         logger.info("{} cashflow {} records".format(code, len(tps)))
         tps = website.get_profit(code)
         for tp in tps if tps else []:
-            flag += 1
             self.save_finance(code, "profit", tp)
+        flag += len(tps)
         logger.info("{} profit {} records".format(code, len(tps)))
         return flag
 
