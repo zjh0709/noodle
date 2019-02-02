@@ -15,11 +15,11 @@ def reset_topic():
 
 
 def clear_stock():
-    SpiderRunner.clear_stock()
+    SpiderRunner().clear_stock()
 
 
 def clear_topic():
-    SpiderRunner.clear_topic()
+    SpiderRunner().clear_topic()
 
 
 def run_topic(mode="append"):
@@ -86,4 +86,4 @@ def run_finance():
 
 
 if __name__ == '__main__':
-    run_finance()
+    clear_topic()
