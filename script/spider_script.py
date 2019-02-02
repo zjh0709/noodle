@@ -14,6 +14,14 @@ def reset_topic():
     SpiderRunner().reset_topic()
 
 
+def clear_stock():
+    SpiderRunner.clear_stock()
+
+
+def clear_topic():
+    SpiderRunner.clear_topic()
+
+
 def run_topic(mode="append"):
     assert mode in ("append", "overwrite")
     spider_runner = SpiderRunner()

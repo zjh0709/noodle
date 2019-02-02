@@ -38,6 +38,15 @@ class SpiderRunner(object):
     def get_topic_left(self) -> list:
         return self.r.lrange(self.topic_key, 0, 5000)
 
+    def clear_stock(self) -> None:
+        """
+        清空redis中的stock队列
+        :return:
+        """
+        logger.info("start clear stock")
+        self.r.delete(self.stock_key)
+        logger.info("clear stock success.")
+
     def reset_stock(self) -> None:
         """
         重置redis中的stock队列 [url,url,...]
@@ -48,16 +57,27 @@ class SpiderRunner(object):
         self.r.rpush(self.stock_key, *STOCKS)
         logger.info("reset stock success.")
 
+    def clear_topic(self) -> None:
+        """
+        清空redis中的topic队列
+        :return:
+        """
+        logger.info("start clear topic")
+        self.r.delete(self.topic_key)
+        logger.info("clear topic success.")
+
     def reset_topic(self) -> None:
         """
-        重置redis中的article队列[{url:,domain:,category:},{url:,domain:,category:},...]
+        重置redis中的topic队列[{url:,domain:,category:},{url:,domain:,category:},...]
         :return:
         """
         logger.info("start reset topic")
         self.r.delete(self.topic_key)
         cur = self.db.get_collection(self.article_table) \
             .find({"$or": [{"content": ""}, {"content": {"$exists": False}}]},
-                  {"_id": 0, "url": 1, "domain": 1, "category": 1}).limit(5000)
+                  {"_id": 0, "url": 1, "domain": 1, "category": 1})\
+            .sort({"uptime": 1})\
+            .limit(3000)
         for article in cur:
             self.r.rpush(self.topic_key, json.dumps(article))
         logger.info("reset topic success.")
