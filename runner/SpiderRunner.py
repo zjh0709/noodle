@@ -4,6 +4,8 @@ import logging
 import traceback
 from logging.handlers import RotatingFileHandler
 
+import pymongo
+
 from conn.client import mongodb_client, redis_client
 from runner.config import STOCK_KEY, STOCKS, ARTICLE_TABLE, TOPIC_KEY, INFO_TABLE, FINANCE_TABLE
 from spider.website import WebSite
@@ -76,7 +78,7 @@ class SpiderRunner(object):
         cur = self.db.get_collection(self.article_table) \
             .find({"$or": [{"content": ""}, {"content": {"$exists": False}}]},
                   {"_id": 0, "url": 1, "domain": 1, "category": 1})\
-            .sort({"uptime": 1})\
+            .sort([("uptime", pymongo.ASCENDING)])\
             .limit(3000)
         for article in cur:
             self.r.rpush(self.topic_key, json.dumps(article))
