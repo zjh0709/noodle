@@ -2,10 +2,6 @@ from runner.SpiderRunner import SpiderRunner, logger
 from spider.websites import sina, jrj, wangyi, eastmoney, hexun
 
 
-def test():
-    print("test!")
-
-
 def reset_stock():
     SpiderRunner().reset_stock()
 
@@ -86,4 +82,4 @@ def run_finance():
 
 
 if __name__ == '__main__':
-    clear_topic()
+    reset_topic()

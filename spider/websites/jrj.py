@@ -102,7 +102,7 @@ class JrjNews(WebSite):
 
     def __init__(self):
         super().__init__()
-        self.name = "jrj"
+        self.domain = "jrj"
         self.category = "news"
 
     def topic_wizard(self, code: str, page_num: int):
