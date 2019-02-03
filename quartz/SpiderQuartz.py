@@ -8,10 +8,10 @@ class SpiderScheduler(Quartz):
         # article
         self.schedudler.add_job(spider_script.clear_topic, "cron", hour="*/1", minute="6,36")
         self.schedudler.add_job(spider_script.reset_topic, "cron", hour="*/1", minute="8,38")
-        self.schedudler.add_job(spider_script.run_article, "cron", hour="*/1", minute="11,41")
-        self.schedudler.add_job(spider_script.run_article, "cron", hour="*/1", minute="12,42")
-        self.schedudler.add_job(spider_script.run_article, "cron", hour="*/1", minute="13,43")
-        self.schedudler.add_job(spider_script.run_article, "cron", hour="*/1", minute="14,44")
+        self.schedudler.add_job(spider_script.run_article, "cron", hour="*/1", minute="18,48")
+        self.schedudler.add_job(spider_script.run_article, "cron", hour="*/1", minute="19,49")
+        self.schedudler.add_job(spider_script.run_article, "cron", hour="*/1", minute="20,50")
+        self.schedudler.add_job(spider_script.run_article, "cron", hour="*/1", minute="21,51")
 
         # topic
         self.schedudler.add_job(spider_script.clear_stock, "cron", hour="0", minute="0")
