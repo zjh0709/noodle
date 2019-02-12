@@ -7,8 +7,10 @@ from logging.handlers import RotatingFileHandler
 import pymongo
 
 from conn.client import mongodb_client, redis_client
-from runner.config import STOCK_KEY, STOCKS, ARTICLE_TABLE, TOPIC_KEY, INFO_TABLE, FINANCE_TABLE
+from runner.config import STOCK_KEY, STOCKS, ARTICLE_TABLE, TOPIC_KEY, INFO_TABLE, FINANCE_TABLE, MARKET_TABLE, \
+    MARKET_KEY, DATE_KEY
 from spider.website import WebSite
+from spider.market import Market
 
 console = RotatingFileHandler(filename="/mnt/d/log/noodle/spider.log",
                               mode="a",
@@ -27,9 +29,12 @@ class SpiderRunner(object):
     article_table = ARTICLE_TABLE
     info_table = INFO_TABLE
     finance_table = FINANCE_TABLE
+    market_table = MARKET_TABLE
     # redis
     stock_key = STOCK_KEY
     topic_key = TOPIC_KEY
+    date_key = DATE_KEY
+    market_key = MARKET_KEY
 
     def __init__(self):
         pass
@@ -84,6 +89,29 @@ class SpiderRunner(object):
             self.r.rpush(self.topic_key, json.dumps(article))
         logger.info("reset topic success.")
 
+    def clear_date(self) -> None:
+        """
+        清空redis中的date队列
+        :return:
+        """
+        logger.info("start clear date")
+        self.r.delete(self.date_key)
+        logger.info("clear date success.")
+
+    def reset_date(self) -> None:
+        """
+        重置redis中的date队列 [code,code,...]
+        :return:
+        """
+        logger.info("start reset date")
+        self.r.delete(self.date_key)
+        start = "20160101"
+        end = (datetime.datetime.now() + datetime.timedelta(days=-1)).strftime("%Y%m%d")
+        market = Market()
+        dates = market.get_trade_day(start, end)
+        self.r.rpush(self.date_key, *dates)
+        logger.info("reset date success.")
+
     def next_stock(self) -> str:
         """
         返回一个stock
@@ -98,6 +126,14 @@ class SpiderRunner(object):
         :return:
         """
         data = self.r.lpop(self.topic_key)
+        return data.decode("utf-8") if data else None
+
+    def next_date(self) -> str:
+        """
+        返回一个date
+        :return:
+        """
+        data = self.r.lpop(self.date_key)
         return data.decode("utf-8") if data else None
 
     def topic_runner(self, website: WebSite, code: str, mode: str = "append") -> int:
@@ -205,9 +241,29 @@ class SpiderRunner(object):
         modified_count = result.modified_count
         return modified_count
 
+    def online_runner(self) -> int:
+        market = Market()
+        data = market.get_online_data()
+        if data:
+            self.r.delete(self.market_key)
+            for d in market.get_online_data():
+                self.r.hset(self.market_key, d["code"], json.dumps(d))
+        return len(data)
+
+    def offline_runner(self, dt: str=None) -> int:
+        yesterday = (datetime.datetime.now() + datetime.timedelta(days=-1)).strftime("%Y%m%d")
+        dt = yesterday if dt is None else dt
+        market = Market()
+        data = market.get_daily_data(dt)
+        if data:
+            self.db.get_collection(self.market_table).delete_many({"trade_date": dt})
+            self.db.get_collection(self.market_table).insert_many(data)
+        return len(data)
+
 
 if __name__ == '__main__':
     from spider.websites import sina
 
     job = SpiderRunner()
-    job.topic_runner(sina.SinaReport(), "600597")
+    # job.topic_runner(sina.SinaReport(), "600597")
+    print(job.offline_runner("20190103"))

@@ -1,10 +1,13 @@
 STOCK_KEY = "stock"
 TOPIC_KEY = "topic"
 KEYWORD_KEY = "keyword"
+DATE_KEY = "date"
+MARKET_KEY = "market"
 
 ARTICLE_TABLE = "article"
 INFO_TABLE = "info"
 FINANCE_TABLE = "finance"
+MARKET_TABLE = "market"
 
 WORD_TABLE = "word"
 

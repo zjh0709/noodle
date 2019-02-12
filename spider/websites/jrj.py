@@ -2,6 +2,7 @@ import re
 import traceback
 
 import requests
+import urllib3
 from bs4 import BeautifulSoup
 
 from spider.website import WebSite
@@ -94,6 +95,8 @@ class JrjReport(WebSite):
         except requests.Timeout:
             traceback.print_exc()
         except requests.exceptions.ConnectionError:
+            traceback.print_exc()
+        except urllib3.exceptions.ReadTimeoutError:
             traceback.print_exc()
         return article
 
