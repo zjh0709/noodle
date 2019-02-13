@@ -112,4 +112,4 @@ def run_online():
 
 
 if __name__ == '__main__':
-    reset_date()
+    run_online()

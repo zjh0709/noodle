@@ -242,9 +242,10 @@ class SpiderRunner(object):
         return modified_count
 
     def online_runner(self) -> int:
+        update_time = datetime.datetime.now().strftime("%Y-%m-%d %X")
         market = Market()
         data = market.get_online_data()
-        data = {d["code"]: json.dumps(d) for d in data}
+        data = {d["code"]: json.dumps(dict(**d, update_time=update_time)) for d in data}
         if data:
             self.r.delete(self.market_key)
             self.r.hmset(self.market_key, data)

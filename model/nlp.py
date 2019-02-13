@@ -10,5 +10,12 @@ class Nlp(object):
         pass
 
     def keyword(self, title: str, content: str) -> list:
+        """
+        从文章中抽取关键字
+        :param title:
+        :param content:
+        :return:
+        """
         pass
+
 
