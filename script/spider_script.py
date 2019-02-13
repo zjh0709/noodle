@@ -1,3 +1,5 @@
+import datetime
+
 from runner.SpiderRunner import SpiderRunner, logger
 from spider.websites import sina, jrj, wangyi, eastmoney, hexun
 
@@ -10,12 +12,20 @@ def reset_topic():
     SpiderRunner().reset_topic()
 
 
+def reset_date():
+    SpiderRunner().reset_date()
+
+
 def clear_stock():
     SpiderRunner().clear_stock()
 
 
 def clear_topic():
     SpiderRunner().clear_topic()
+
+
+def clear_date():
+    SpiderRunner().clear_date()
 
 
 def run_topic(mode="append"):
@@ -81,5 +91,25 @@ def run_finance():
         spider_runner.finance_runner(sina_info, code)
 
 
+def run_offline():
+    spider_runner = SpiderRunner()
+    while True:
+        dt = spider_runner.next_date()
+        if dt is None:
+            logger.warning("no date!")
+            break
+        spider_runner.offline_runner(dt)
+
+
+def run_offline_yesterday():
+    spider_runner = SpiderRunner()
+    spider_runner.offline_runner()
+
+
+def run_online():
+    spider_runner = SpiderRunner()
+    spider_runner.online_runner()
+
+
 if __name__ == '__main__':
-    reset_topic()
+    reset_date()

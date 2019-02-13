@@ -244,10 +244,11 @@ class SpiderRunner(object):
     def online_runner(self) -> int:
         market = Market()
         data = market.get_online_data()
+        data = {d["code"]: json.dumps(d) for d in data}
         if data:
             self.r.delete(self.market_key)
-            for d in market.get_online_data():
-                self.r.hset(self.market_key, d["code"], json.dumps(d))
+            self.r.hmset(self.market_key, data)
+        logger.info("online market {} records.".format(len(data)))
         return len(data)
 
     def offline_runner(self, dt: str=None) -> int:
@@ -258,6 +259,7 @@ class SpiderRunner(object):
         if data:
             self.db.get_collection(self.market_table).delete_many({"trade_date": dt})
             self.db.get_collection(self.market_table).insert_many(data)
+        logger.info("{} offline market {} records".format(dt, len(data)))
         return len(data)
 
 
@@ -266,4 +268,6 @@ if __name__ == '__main__':
 
     job = SpiderRunner()
     # job.topic_runner(sina.SinaReport(), "600597")
-    print(job.offline_runner("20190103"))
+    # print(job.offline_runner("20190103"))
+    # print(job.online_runner())
+    job.reset_date()

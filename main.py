@@ -25,3 +25,5 @@ if __name__ == '__main__':
         spider_script.run_finance()
     elif cmd == "info":
         spider_script.run_info()
+    elif cmd == "market":
+        spider_script.run_offline()
