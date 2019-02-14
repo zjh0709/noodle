@@ -104,8 +104,15 @@ class ModelRunner(object):
             traceback.print_exc()
         return modified_count
 
+    def get_words(self):
+        useless_words = self.db.get_collection(self.word_table)\
+            .find({"score": -1}, {"_id": 0, "word": 1})
+        useful_words = self.db.get_collection(self.word_table)\
+            .find({"code.0": {"$exists": True}}, {"_id": 0, "word": 1})
+        return {"useless": useless_words, "useful": useful_words}
+
     def add_useless_word(self, word: str) -> int:
-        result = self.db.get_collection(self.word_table) \
+        result = self.db.get_collection(self.word_table)\
             .replace_one({"word": word},
                          {"word": word, "score": -1}, upsert=True)
         logger.info("add useless word {} success.".format(word))
