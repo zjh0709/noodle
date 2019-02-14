@@ -8,7 +8,6 @@ ARTICLE_TABLE = "article"
 INFO_TABLE = "info"
 FINANCE_TABLE = "finance"
 MARKET_TABLE = "market"
-
 WORD_TABLE = "word"
 
 STOCKS = [

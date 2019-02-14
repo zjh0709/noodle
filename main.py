@@ -2,7 +2,7 @@ import sys
 
 from quartz.SpiderQuartz import SpiderScheduler
 from quartz.ModelQuartz import ModelQuartz
-from script import spider_script
+from script import spider_script, model_script
 
 
 if __name__ == '__main__':
@@ -27,3 +27,7 @@ if __name__ == '__main__':
         spider_script.run_info()
     elif cmd == "market":
         spider_script.run_offline()
+    elif cmd == "word":
+        model_script.run_word()
+
+

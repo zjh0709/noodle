@@ -21,5 +21,10 @@ def run_keyword():
         model_runner.keyword_runner(baidu_nlp, url)
 
 
+def run_word():
+    model_runner = ModelRunner()
+    model_runner.save_article_keyword()
+
+
 if __name__ == '__main__':
     run_keyword()
