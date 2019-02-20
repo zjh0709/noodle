@@ -2,8 +2,6 @@ import datetime
 import logging
 import traceback
 from logging.handlers import RotatingFileHandler
-from operator import itemgetter
-from itertools import chain, groupby, product
 
 import pymongo
 
