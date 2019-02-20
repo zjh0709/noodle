@@ -106,10 +106,16 @@ def run_offline_yesterday():
     spider_runner.offline_runner()
 
 
+def run_offline_today():
+    today = datetime.datetime.now().strftime("%Y%m%d")
+    spider_runner = SpiderRunner()
+    spider_runner.offline_runner(today)
+
+
 def run_online():
     spider_runner = SpiderRunner()
     spider_runner.online_runner()
 
 
 if __name__ == '__main__':
-    run_online()
+    run_offline_today()

@@ -8,7 +8,7 @@ import pymongo
 
 from conn.client import mongodb_client, redis_client
 from runner.config import STOCK_KEY, STOCKS, ARTICLE_TABLE, TOPIC_KEY, INFO_TABLE, FINANCE_TABLE, MARKET_TABLE, \
-    MARKET_KEY, DATE_KEY
+    MARKET_KEY, DATE_KEY, BASIC_KEY
 from spider.website import WebSite
 from spider.market import Market
 
@@ -35,6 +35,7 @@ class SpiderRunner(object):
     topic_key = TOPIC_KEY
     date_key = DATE_KEY
     market_key = MARKET_KEY
+    basic_key = BASIC_KEY
 
     def __init__(self):
         pass
@@ -263,6 +264,17 @@ class SpiderRunner(object):
         logger.info("{} offline market {} records".format(dt, len(data)))
         return len(data)
 
+    def basic_runner(self) -> int:
+        update_time = datetime.datetime.now().strftime("%Y-%m-%d %X")
+        market = Market()
+        data = market.get_basic_data()
+        data = {d["code"]: json.dumps(dict(**d, update_time=update_time)) for d in data}
+        if data:
+            self.r.delete(self.basic_key)
+            self.r.hmset(self.basic_key, data)
+        logger.info("basic {} records.".format(len(data)))
+        return len(data)
+
 
 if __name__ == '__main__':
     from spider.websites import sina
@@ -271,4 +283,4 @@ if __name__ == '__main__':
     # job.topic_runner(sina.SinaReport(), "600597")
     # print(job.offline_runner("20190103"))
     # print(job.online_runner())
-    job.reset_date()
+    job.basic_runner()

@@ -11,10 +11,25 @@ class Market(object):
         ts.set_token(self.token)
         self.pro = ts.pro_api()
 
+    def get_basic_data(self) -> list:
+        today = datetime.datetime.now().strftime("%Y%m%d")
+        if len(self.pro.trade_cal(exchange='', start_date=today, end_date=today, is_open="1")) == 0:
+            return []
+        else:
+            df: DataFrame = ts.get_stock_basics()
+            df.reset_index(inplace=True)
+            df = df[["code",
+                     "pe",
+                     "pb",
+                     "outstanding",
+                     "totals",
+                     "totalAssets"]]
+            return df.to_dict(orient="record")
+
     def get_online_data(self) -> list:
         today = datetime.datetime.now().strftime("%Y%m%d")
         if len(self.pro.trade_cal(exchange='', start_date=today, end_date=today, is_open="1")) == 0:
-            return {}
+            return []
         else:
             df: DataFrame = ts.get_today_all()
             df = df[["code",
@@ -32,7 +47,7 @@ class Market(object):
 
     def get_daily_data(self, dt: str) -> list:
         if len(self.pro.trade_cal(exchange="", start_date=dt, end_date=dt, is_open="1")) == 0:
-            return {}
+            return []
         else:
             daily: DataFrame = self.pro.daily(trade_date=dt)
             adj: DataFrame = self.pro.adj_factor(ts_code="", trade_date=dt)
@@ -54,4 +69,4 @@ class Market(object):
 
 if __name__ == '__main__':
     market = Market()
-    print(len(market.get_daily_data("20190104")))  # 20170705
+    market.get_basic_data()

@@ -22,7 +22,8 @@ class SpiderScheduler(Quartz):
         self.schedudler.add_job(spider_script.run_topic, "cron", hour="0", minute="8")
 
         # market
-        self.schedudler.add_job(spider_script.run_offline_yesterday, "cron", hour="19", minute="0")
+        self.schedudler.add_job(spider_script.run_offline_yesterday, "cron", hour="01", minute="0")
+        self.schedudler.add_job(spider_script.run_offline_today, "cron", hour="16", minute="30")
         self.schedudler.add_job(spider_script.run_online, "cron", hour="8-12", day_of_week='mon-fri', minute="*/2")
         self.schedudler.add_job(spider_script.run_online, "cron", hour="13-16", day_of_week='mon-fri', minute="*/2")
 

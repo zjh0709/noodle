@@ -3,6 +3,7 @@ TOPIC_KEY = "topic"
 KEYWORD_KEY = "keyword"
 DATE_KEY = "date"
 MARKET_KEY = "market"
+BASIC_KEY = "basic"
 
 ARTICLE_TABLE = "article"
 INFO_TABLE = "info"
